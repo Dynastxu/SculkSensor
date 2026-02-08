@@ -71,7 +71,7 @@ fun AddServerScreen(navController: NavController) {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun AddServerScreenPreview() {
     AddServerScreen(rememberNavController())
