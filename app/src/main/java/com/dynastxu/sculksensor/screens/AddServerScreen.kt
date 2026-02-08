@@ -15,10 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.dynastxu.sculksensor.R
 
 @Composable
 fun AddServerScreen(navController: NavController) {
@@ -36,7 +38,7 @@ fun AddServerScreen(navController: NavController) {
         OutlinedTextField(
             value = serverName,
             onValueChange = { serverName = it },
-            label = { Text("服务器名称") },
+            label = { Text(stringResource(R.string.label_server_name)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -44,7 +46,7 @@ fun AddServerScreen(navController: NavController) {
         OutlinedTextField(
             value = serverAddress,
             onValueChange = { serverAddress = it },
-            label = { Text("服务器地址") },
+            label = { Text(stringResource(R.string.label_server_address)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -52,7 +54,7 @@ fun AddServerScreen(navController: NavController) {
         OutlinedTextField(
             value = serverPort,
             onValueChange = { serverPort = it },
-            label = { Text("端口") },
+            label = { Text(stringResource(R.string.label_server_port)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -64,7 +66,7 @@ fun AddServerScreen(navController: NavController) {
             },
             modifier = Modifier.align(Alignment.End)
         ) {
-            Text("保存")
+            Text(stringResource(R.string.button_save))
         }
     }
 }

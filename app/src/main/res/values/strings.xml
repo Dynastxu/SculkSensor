@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Sculk Sensor</string>
+    <string name="title_servers">Servers</string>
+    <string name="title_message">Message</string>
+    <string name="title_person">Personal</string>
+    <string name="label_server_name">Server Name</string>
+    <string name="label_server_address">Server Address</string>
+    <string name="label_server_port">Server Port</string>
+    <string name="button_save">Save</string>
+    <string name="button_add_server">Add Server</string>
+    <string name="title_add_server">Add Server</string>
 </resources>

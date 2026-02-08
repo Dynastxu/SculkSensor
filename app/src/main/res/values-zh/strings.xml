@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">幽匿感测体</string>
+    <string name="title_servers">服务器</string>
+    <string name="title_message">消息</string>
+    <string name="title_person">我的</string>
+    <string name="label_server_name">服务器名称</string>
+    <string name="label_server_address">服务器地址</string>
+    <string name="label_server_port">服务器端口</string>
+    <string name="button_save">保存</string>
+    <string name="button_add_server">添加服务器</string>
+    <string name="title_add_server">添加服务器</string>
+</resources>

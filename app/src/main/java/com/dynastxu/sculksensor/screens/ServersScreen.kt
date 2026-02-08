@@ -19,10 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.dynastxu.sculksensor.R
 import com.dynastxu.sculksensor.ROUTE_ADD_SERVER
 import com.dynastxu.sculksensor.data.model.Server
 import java.util.Base64
@@ -47,7 +50,7 @@ fun AddServerButton(navController: NavController) {
             navController.navigate(ROUTE_ADD_SERVER)
         }
     ) {
-        Text("添加服务器")
+        Text(stringResource(R.string.button_add_server))
     }
 }
 
@@ -125,7 +128,7 @@ fun Server(server: Server) {
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, device = "spec:width=1080px,height=2340px,dpi=440")
 @Composable
 fun ServerPreview() {
     // 创建一个示例 Server 对象
@@ -148,4 +151,10 @@ fun ServerPreview() {
 
     // 调用 Server Composable 函数
     Server(server = sampleServer)
+}
+
+@Preview
+@Composable
+fun AddServerButtonPreview() {
+    AddServerButton(rememberNavController())
 }

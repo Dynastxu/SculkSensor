@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -69,9 +70,9 @@ fun MainApp() {
 
     // 3. 定义底部导航的三个项目
     val bottomNavItems = listOf(
-        BottomNavItem(title = "服务器", icon = Icons.AutoMirrored.Filled.List, route = ROUTE_SERVERS),
-        BottomNavItem(title = "消息", icon = Icons.AutoMirrored.Filled.Message, route = ROUTE_MESSAGE),
-        BottomNavItem(title = "我的", icon = Icons.Default.Person, route = ROUTE_PROFILE)
+        BottomNavItem(title = stringResource(R.string.title_servers), icon = Icons.AutoMirrored.Filled.List, route = ROUTE_SERVERS),
+        BottomNavItem(title = stringResource(R.string.title_message), icon = Icons.AutoMirrored.Filled.Message, route = ROUTE_MESSAGE),
+        BottomNavItem(title = stringResource(R.string.title_person), icon = Icons.Default.Person, route = ROUTE_PROFILE)
     )
 
     // 4. 判断是否显示返回键
@@ -82,11 +83,11 @@ fun MainApp() {
             // 顶部栏
             AppTopBar(
                 title = when (currentRoute) { // 根据路由设置标题
-                    ROUTE_SERVERS -> "服务器"
-                    ROUTE_MESSAGE -> "消息"
-                    ROUTE_PROFILE -> "我的"
-                    ROUTE_ADD_SERVER -> "添加服务器"
-                    else -> "App"
+                    ROUTE_SERVERS -> stringResource(R.string.title_servers)
+                    ROUTE_MESSAGE -> stringResource(R.string.title_message)
+                    ROUTE_PROFILE -> stringResource(R.string.title_person)
+                    ROUTE_ADD_SERVER -> stringResource(R.string.title_add_server)
+                    else -> stringResource(R.string.app_name)
                 },
                 showBackButton = showBackButton,
                 onBackClick = { navController.navigateUp() } // 点击返回键时弹出返回栈
