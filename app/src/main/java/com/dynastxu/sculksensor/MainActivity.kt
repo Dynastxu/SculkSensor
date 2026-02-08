@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -19,18 +18,19 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.dynastxu.sculksensor.screens.MessageScreen
+import com.dynastxu.sculksensor.screens.ProfileScreen
+import com.dynastxu.sculksensor.screens.ServersScreen
 import com.dynastxu.sculksensor.ui.theme.SculkSensorTheme
 
 const val ROUTE_SERVERS = "servers"
@@ -46,27 +46,6 @@ class MainActivity : ComponentActivity() {
                 MainApp()
             }
         }
-    }
-}
-
-@Composable
-fun ServersScreen() {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Text("服务器内容", modifier = Modifier.padding(24.dp))
-    }
-}
-
-@Composable
-fun MessageScreen() {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Text("消息内容", modifier = Modifier.padding(24.dp))
-    }
-}
-
-@Composable
-fun ProfileScreen() {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Text("个人中心", modifier = Modifier.padding(24.dp))
     }
 }
 
