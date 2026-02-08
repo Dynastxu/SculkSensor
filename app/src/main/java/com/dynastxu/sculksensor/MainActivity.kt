@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 )
-                MainApp(viewModel = viewModel)
+                MainApp(viewModel)
             }
         }
     }

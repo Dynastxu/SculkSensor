@@ -15,6 +15,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -74,74 +78,89 @@ fun AddServerButton(navController: NavController) {
 
 @Composable
 fun Server(server: Server) {
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // 图片（最左边）
-        Image(
-            painter = rememberAsyncImagePainter(server.icon),
-            contentDescription = "Server Icon",
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.LightGray
         )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // 中间部分
-        Column(
-            modifier = Modifier.weight(1f)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // 名称（上面）
-            Text(
-                text = server.name,
-                style = MaterialTheme.typography.titleMedium
+            // 图片（最左边）
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = server.icon,
+                    placeholder = painterResource(R.drawable.ic_default_server),
+                    error = painterResource(R.drawable.ic_default_server)
+                ),
+                contentDescription = "Server Icon",
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape),
+
             )
 
-            // 是否在线（圆点） + 延迟
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // 中间部分
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                // 是否在线（圆点）
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(
-                            color = if (server.isOnline) Color.Green else Color.Red,
-                            shape = CircleShape
-                        )
+                // 名称（上面）
+                Text(
+                    text = server.name,
+                    style = MaterialTheme.typography.titleMedium
                 )
 
-                Spacer(modifier = Modifier.width(4.dp))
+                // 是否在线（圆点） + 延迟
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 是否在线（圆点）
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .background(
+                                color = if (server.isOnline) Color.Green else Color.Red,
+                                shape = CircleShape
+                            )
+                    )
 
-                // 延迟
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    // 延迟
+                    Text(
+                        text = "${server.delay}ms",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // 最右边部分
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                // 在线人数
                 Text(
-                    text = "${server.delay}ms",
+                    text = "${server.playersOnline}/${server.playersMax}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                // 版本
+                Text(
+                    text = server.version,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-        }
-
-        // 最右边部分
-        Column(
-            horizontalAlignment = Alignment.End
-        ) {
-            // 在线人数
-            Text(
-                text = "${server.playersOnline}/${server.playersMax}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            // 版本
-            Text(
-                text = server.version,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }
