@@ -25,6 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -34,6 +37,9 @@ import com.dynastxu.sculksensor.screens.MessageScreen
 import com.dynastxu.sculksensor.screens.ProfileScreen
 import com.dynastxu.sculksensor.screens.ServersScreen
 import com.dynastxu.sculksensor.ui.theme.SculkSensorTheme
+import com.dynastxu.sculksensor.data.repository.ServerRepository
+import com.dynastxu.sculksensor.viewmodel.ServerViewModel
+import kotlin.getValue
 
 const val ROUTE_SERVERS = "servers"
 const val ROUTE_MESSAGE = "message"
@@ -41,12 +47,24 @@ const val ROUTE_PROFILE = "profile"
 const val ROUTE_ADD_SERVER = "add_server"
 
 class MainActivity : ComponentActivity() {
+    // 创建 Repository 实例
+    private val repository by lazy { ServerRepository(applicationContext) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             SculkSensorTheme {
-                MainApp()
+                // 使用自定义 ViewModel 工厂
+                val viewModel: ServerViewModel = viewModel(
+                    factory = object : ViewModelProvider.Factory {
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            @Suppress("UNCHECKED_CAST")
+                            return ServerViewModel(repository) as T
+                        }
+                    }
+                )
+                MainApp(viewModel = viewModel)
             }
         }
     }
@@ -58,9 +76,8 @@ data class BottomNavItem(
     val route: String
 )
 
-@Preview(showSystemUi = true)
 @Composable
-fun MainApp() {
+fun MainApp(viewModel: ServerViewModel) {
     // 1. 创建导航控制器，它是所有导航操作的核心
     val navController = rememberNavController()
 
@@ -118,10 +135,10 @@ fun MainApp() {
             modifier = Modifier.padding(innerPadding)
         ) {
             // 将路由与前面定义的页面组件关联起来
-            composable(ROUTE_SERVERS) { ServersScreen(navController) }
+            composable(ROUTE_SERVERS) { ServersScreen(navController = navController, viewModel = viewModel) }
             composable(ROUTE_MESSAGE) { MessageScreen() }
             composable(ROUTE_PROFILE) { ProfileScreen() }
-            composable(ROUTE_ADD_SERVER) { AddServerScreen(navController) }
+            composable(ROUTE_ADD_SERVER) { AddServerScreen(navController = navController, viewModel = viewModel) }
         }
     }
 }

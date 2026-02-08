@@ -16,14 +16,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.dynastxu.sculksensor.R
+import com.dynastxu.sculksensor.data.model.Server
+import com.dynastxu.sculksensor.viewmodel.ServerViewModel
 
 @Composable
-fun AddServerScreen(navController: NavController) {
+fun AddServerScreen(navController: NavController, viewModel: ServerViewModel) {
     var serverName by remember { mutableStateOf("") }
     var serverAddress by remember { mutableStateOf("") }
     var serverPort by remember { mutableStateOf("") }
@@ -61,18 +61,26 @@ fun AddServerScreen(navController: NavController) {
         // 保存按钮
         Button(
             onClick = {
-                // TODO 保存逻辑
-                navController.popBackStack() // 示例：返回上一页
+                if (serverName.isNotBlank() && serverAddress.isNotBlank()) {
+                    // 创建 Server 对象（只存储用户输入的数据）
+                    val server = Server(
+                        name = serverName,
+                        address = serverAddress,
+                        port = serverPort.toIntOrNull() ?: 25565,
+                    )
+
+                    // 保存到 DataStore
+                    viewModel.addServer(server)
+
+                    // 返回上一页
+                    navController.popBackStack()
+                } else {
+                    // 可以添加错误提示
+                }
             },
             modifier = Modifier.align(Alignment.End)
         ) {
             Text(stringResource(R.string.button_save))
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AddServerScreenPreview() {
-    AddServerScreen(rememberNavController())
 }

@@ -7,14 +7,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,17 +33,30 @@ import coil.compose.rememberAsyncImagePainter
 import com.dynastxu.sculksensor.R
 import com.dynastxu.sculksensor.ROUTE_ADD_SERVER
 import com.dynastxu.sculksensor.data.model.Server
+import com.dynastxu.sculksensor.viewmodel.ServerViewModel
 import java.util.Base64
 import java.util.UUID
 
 @Composable
-fun ServersScreen(navController: NavController) {
+fun ServersScreen(navController: NavController, viewModel: ServerViewModel) {
+    // 收集服务器列表
+    val servers by viewModel.servers.collectAsState()
+
     Column (
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp), // 添加内边距
         horizontalAlignment = Alignment.CenterHorizontally // 水平居中
     ) {
+        // 显示服务器列表
+        LazyColumn {
+            items(servers) { server ->
+                Server(server = server)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         AddServerButton(navController)
     }
 }
@@ -73,7 +91,7 @@ fun Server(server: Server) {
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        // 中间部分：名称和版本
+        // 中间部分
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -83,19 +101,7 @@ fun Server(server: Server) {
                 style = MaterialTheme.typography.titleMedium
             )
 
-            // 版本（下面）
-            Text(
-                text = server.version,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        // 最右边部分：是否在线和在线人数
-        Column(
-            horizontalAlignment = Alignment.End
-        ) {
-            // 第一行：是否在线（圆点） + 延迟
+            // 是否在线（圆点） + 延迟
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -104,31 +110,44 @@ fun Server(server: Server) {
                     modifier = Modifier
                         .size(12.dp)
                         .background(
-                            color = if (server.isOnline == true) Color.Green else Color.Red,
+                            color = if (server.isOnline) Color.Green else Color.Red,
                             shape = CircleShape
                         )
                 )
 
                 Spacer(modifier = Modifier.width(4.dp))
 
-                // 延迟（圆点右边）
+                // 延迟
                 Text(
                     text = "${server.delay}ms",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            // 在线人数（下面）
+        }
+
+        // 最右边部分
+        Column(
+            horizontalAlignment = Alignment.End
+        ) {
+            // 在线人数
             Text(
                 text = "${server.playersOnline}/${server.playersMax}",
                 style = MaterialTheme.typography.bodyMedium
+            )
+
+            // 版本
+            Text(
+                text = server.version,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
 }
 
 
-@Preview(showBackground = true, device = "spec:width=1080px,height=2340px,dpi=440")
+@Preview(showBackground = true)
 @Composable
 fun ServerPreview() {
     // 创建一个示例 Server 对象
