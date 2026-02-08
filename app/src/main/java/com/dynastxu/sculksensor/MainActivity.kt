@@ -28,6 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.dynastxu.sculksensor.screens.AddServerScreen
 import com.dynastxu.sculksensor.screens.MessageScreen
 import com.dynastxu.sculksensor.screens.ProfileScreen
 import com.dynastxu.sculksensor.screens.ServersScreen
@@ -36,6 +37,7 @@ import com.dynastxu.sculksensor.ui.theme.SculkSensorTheme
 const val ROUTE_SERVERS = "servers"
 const val ROUTE_MESSAGE = "message"
 const val ROUTE_PROFILE = "profile"
+const val ROUTE_ADD_SERVER = "add_server"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,8 +74,8 @@ fun MainApp() {
         BottomNavItem(title = "我的", icon = Icons.Default.Person, route = ROUTE_PROFILE)
     )
 
-    // 4. 判断是否在首页，不在首页则顶部栏显示返回键
-    val showBackButton = currentRoute != ROUTE_SERVERS
+    // 4. 判断是否显示返回键
+    val showBackButton = (currentRoute != ROUTE_SERVERS) and (currentRoute != ROUTE_MESSAGE) and (currentRoute != ROUTE_PROFILE)
 
     Scaffold(
         topBar = {
@@ -83,6 +85,7 @@ fun MainApp() {
                     ROUTE_SERVERS -> "服务器"
                     ROUTE_MESSAGE -> "消息"
                     ROUTE_PROFILE -> "我的"
+                    ROUTE_ADD_SERVER -> "添加服务器"
                     else -> "App"
                 },
                 showBackButton = showBackButton,
@@ -114,9 +117,10 @@ fun MainApp() {
             modifier = Modifier.padding(innerPadding)
         ) {
             // 将路由与前面定义的页面组件关联起来
-            composable(ROUTE_SERVERS) { ServersScreen() }
+            composable(ROUTE_SERVERS) { ServersScreen(navController) }
             composable(ROUTE_MESSAGE) { MessageScreen() }
             composable(ROUTE_PROFILE) { ProfileScreen() }
+            composable(ROUTE_ADD_SERVER) { AddServerScreen(navController) }
         }
     }
 }
