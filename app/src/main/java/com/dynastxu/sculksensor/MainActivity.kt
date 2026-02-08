@@ -6,12 +6,36 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.Message
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.dynastxu.sculksensor.ui.theme.SculkSensorTheme
+
+const val ROUTE_SERVERS = "servers"
+const val ROUTE_MESSAGE = "message"
+const val ROUTE_PROFILE = "profile"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,29 +43,145 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SculkSensorTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainApp()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun ServersScreen() {
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Text("服务器内容", modifier = Modifier.padding(24.dp))
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    SculkSensorTheme {
-        Greeting("Android")
+fun MessageScreen() {
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Text("消息内容", modifier = Modifier.padding(24.dp))
     }
+}
+
+@Composable
+fun ProfileScreen() {
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Text("个人中心", modifier = Modifier.padding(24.dp))
+    }
+}
+
+data class BottomNavItem(
+    val title: String,
+    val icon: ImageVector,
+    val route: String
+)
+
+@Preview
+@Composable
+fun MainApp() {
+    // 1. 创建导航控制器，它是所有导航操作的核心
+    val navController = rememberNavController()
+
+    // 2. 观察返回栈状态，获取当前路由
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // 3. 定义底部导航的三个项目
+    val bottomNavItems = listOf(
+        BottomNavItem(title = "服务器", icon = Icons.AutoMirrored.Filled.List, route = ROUTE_SERVERS),
+        BottomNavItem(title = "消息", icon = Icons.AutoMirrored.Filled.Message, route = ROUTE_MESSAGE),
+        BottomNavItem(title = "我的", icon = Icons.Default.Person, route = ROUTE_PROFILE)
+    )
+
+    // 4. 判断是否在首页，不在首页则顶部栏显示返回键
+    val showBackButton = currentRoute != ROUTE_SERVERS
+
+    Scaffold(
+        topBar = {
+            // 顶部栏
+            AppTopBar(
+                title = when (currentRoute) { // 根据路由设置标题
+                    ROUTE_SERVERS -> "服务器"
+                    ROUTE_MESSAGE -> "消息"
+                    ROUTE_PROFILE -> "我的"
+                    else -> "App"
+                },
+                showBackButton = showBackButton,
+                onBackClick = { navController.navigateUp() } // 点击返回键时弹出返回栈
+            )
+        },
+        bottomBar = {
+            // 底部导航栏
+            // 仅在三个主页面显示底部栏（简单示例，可根据需要调整）
+            if (currentRoute in listOf(ROUTE_SERVERS, ROUTE_MESSAGE, ROUTE_PROFILE)) {
+                BottomNavigationBar(
+                    items = bottomNavItems,
+                    currentRoute = currentRoute,
+                    onItemClick = { route ->
+                        navController.navigate(route) {
+                            // 重要的导航选项：避免重复点击创建多个实例
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+        }
+    ) { innerPadding -> // innerPadding是Scaffold计算出的内边距，避免内容被栏遮挡
+        // 页面导航容器
+        // 导航图：定义路线和页面的映射关系
+        NavHost(
+            navController = navController,
+            startDestination = ROUTE_SERVERS, // 起始页
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            // 将路由与前面定义的页面组件关联起来
+            composable(ROUTE_SERVERS) { ServersScreen() }
+            composable(ROUTE_MESSAGE) { MessageScreen() }
+            composable(ROUTE_PROFILE) { ProfileScreen() }
+        }
+    }
+}
+
+@Composable
+fun BottomNavigationBar(
+    items: List<BottomNavItem>,
+    currentRoute: String?,
+    onItemClick: (String) -> Unit // 点击事件的回调
+) {
+    NavigationBar {
+        items.forEach { item ->
+            NavigationBarItem(
+                // 当前项是否被选中（高亮）
+                selected = currentRoute == item.route,
+                onClick = { onItemClick(item.route) }, // 点击时通知父组件
+                icon = { Icon(item.icon, contentDescription = item.title) },
+                label = { Text(item.title) }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppTopBar(
+    title: String,
+    showBackButton: Boolean,
+    onBackClick: () -> Unit = {}
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+            if (showBackButton) {
+                IconButton(onClick = onBackClick) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                }
+            }
+        },
+        actions = {
+            // 更多选项按钮（可以后续扩展菜单）
+            IconButton(onClick = { /* 暂不处理 */ }) {
+                Icon(Icons.Default.MoreVert, contentDescription = "更多")
+            }
+        }
+    )
 }
