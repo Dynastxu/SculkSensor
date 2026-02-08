@@ -58,7 +58,7 @@ data class BottomNavItem(
     val route: String
 )
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 fun MainApp() {
     // 1. 创建导航控制器，它是所有导航操作的核心
