@@ -145,7 +145,7 @@ fun Server(serverData: ServerData, viewModel: ServerViewModel) {
                 },
                 contentDescription = "Server Icon",
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(64.dp)
                     .clip(CircleShape),
             )
 
