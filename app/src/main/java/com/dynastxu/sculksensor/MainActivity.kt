@@ -24,22 +24,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.dynastxu.sculksensor.data.repository.ServerRepository
 import com.dynastxu.sculksensor.screens.AddServerScreen
 import com.dynastxu.sculksensor.screens.MessageScreen
 import com.dynastxu.sculksensor.screens.ProfileScreen
 import com.dynastxu.sculksensor.screens.ServersScreen
 import com.dynastxu.sculksensor.ui.theme.SculkSensorTheme
-import com.dynastxu.sculksensor.data.repository.ServerRepository
 import com.dynastxu.sculksensor.viewmodel.ServerViewModel
-import kotlin.getValue
 
 const val ROUTE_SERVERS = "servers"
 const val ROUTE_MESSAGE = "message"
