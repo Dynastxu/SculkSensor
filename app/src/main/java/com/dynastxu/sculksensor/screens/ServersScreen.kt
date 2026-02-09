@@ -179,7 +179,7 @@ fun Server(serverData: ServerData, viewModel: ServerViewModel) {
 
                     // 延迟
                     Text(
-                        text = "${serverUiState.latency.value}ms",
+                        text = if (serverUiState.isOnline.value) "${serverUiState.latency.value}ms" else stringResource(R.string.text_offline),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -192,13 +192,13 @@ fun Server(serverData: ServerData, viewModel: ServerViewModel) {
             ) {
                 // 在线人数
                 Text(
-                    text = "${serverUiState.playersOnline.value}/${serverUiState.playersMax.value}",
+                    text = if (serverUiState.isOnline.value) "${serverUiState.playersOnline.value}/${serverUiState.playersMax.value}" else "--/--",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 // 版本
                 Text(
-                    text = serverUiState.version.value,
+                    text = if (serverUiState.isOnline.value) serverUiState.version.value else "--",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

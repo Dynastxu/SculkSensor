@@ -11,4 +11,5 @@
     <string name="title_add_server">Add Server</string>
     <string name="menu_item_delete">Delete</string>
     <string name="menu_item_refresh">Refresh</string>
+    <string name="text_offline">Offline</string>
 </resources>
