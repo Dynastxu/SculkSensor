@@ -54,8 +54,8 @@ fun ServersScreen(navController: NavController, viewModel: ServerViewModel) {
     // 收集服务器列表
     val servers by viewModel.servers.collectAsState()
 
-    // 更新服务器状态
-    viewModel.updateServersStatus()
+    // 更新服务器列表
+    viewModel.updateServersUiStatus()
 
     Column (
         modifier = Modifier
