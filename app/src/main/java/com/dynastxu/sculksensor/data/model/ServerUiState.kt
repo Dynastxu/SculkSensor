@@ -15,5 +15,6 @@ data class ServerUiState(
     val description: MutableState<String>,
     val isOnline: MutableState<Boolean>,
     val latency: MutableState<Long>,
-    val lastChecked: MutableState<Long?>
+    val lastChecked: MutableState<Long?>,
+    val modLoader: MutableState<Int?>
 )

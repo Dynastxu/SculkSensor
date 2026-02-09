@@ -196,12 +196,27 @@ fun Server(serverData: ServerData, viewModel: ServerViewModel) {
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                // 版本
-                Text(
-                    text = if (serverUiState.isOnline.value) serverUiState.version.value else "--",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 版本
+                    Text(
+                        text = if (serverUiState.isOnline.value) serverUiState.version.value else "--",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    // Mod 加载器
+                    Text(
+                        text = if (serverUiState.modLoader.value == null) "" else stringResource(
+                            serverUiState.modLoader.value!!
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
         // 弹出菜单

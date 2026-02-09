@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import com.dynastxu.sculksensor.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -39,6 +40,7 @@ import java.util.UUID
  * @param isOnline 是否在线
  * @param latency 延迟
  * @param lastChecked 最后一次检查时间
+ * @param modLoader Mod 加载器
  */
 @Serializable
 data class ServerData(
@@ -56,6 +58,7 @@ data class ServerData(
     var isOnline: Boolean = false,
     var latency: Long = -1,
     var lastChecked: Long? = null,
+    var modLoader: Int? = null
 ) {
     @Transient
     private val TAG_GET_SERVER_STATUE = "服务器状态查询"
@@ -125,6 +128,10 @@ data class ServerData(
                                     is JsonObject -> desc["text"]?.jsonPrimitive?.content ?: desc.toString()
                                     else -> ""
                                 }
+
+                                if (map.contains("forgeData")) {
+                                    modLoader = R.string.modloader_forge
+                                }
                             } catch (e: Exception) {
                                 Log.e(TAG_GET_SERVER_STATUE, "解析服务器 $host 响应失败: ${e.message}")
                                 // 可设置默认值或抛出错误
@@ -168,7 +175,8 @@ data class ServerData(
             description = mutableStateOf(description),
             isOnline = mutableStateOf(isOnline),
             latency = mutableLongStateOf(latency),
-            lastChecked = mutableStateOf(lastChecked)
+            lastChecked = mutableStateOf(lastChecked),
+            modLoader = mutableStateOf(modLoader)
         )
     }
 

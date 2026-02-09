@@ -110,6 +110,7 @@ class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
                     server.isOnline.value = it.isOnline
                     server.latency.value = it.latency
                     server.lastChecked.value = it.lastChecked
+                    server.modLoader.value = it.modLoader
                 }
             }
         }
