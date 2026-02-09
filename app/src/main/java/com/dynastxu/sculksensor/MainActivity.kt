@@ -1,6 +1,7 @@
 package com.dynastxu.sculksensor
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,11 +24,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -178,6 +181,15 @@ fun AppTopBar(
 ) {
     // 控制菜单是否展开的状态
     var expanded by remember { mutableStateOf(false) }
+    var showToast by remember { mutableStateOf(false) }
+    var showToastText by remember { mutableStateOf("") }
+    var showToastDuration by remember { mutableIntStateOf(Toast.LENGTH_SHORT) }
+
+    fun showToast(text: String, duration: Int){
+        showToast = true
+        showToastText = text
+        showToastDuration = duration
+    }
 
     CenterAlignedTopAppBar(
         title = { Text(title) },
@@ -205,10 +217,16 @@ fun AppTopBar(
                         onClick = {
                             viewModel.updateServersStatus()
                             expanded = false
+                            showToast("刷新中", Toast.LENGTH_SHORT)
                         }
                     )
                 }
             }
         }
     )
+    // 使用 LaunchedEffect 处理 Toast 显示
+    if (showToast) {
+        Toast.makeText(LocalContext.current, showToastText, showToastDuration).show()
+        showToast = false // 重置状态
+    }
 }
