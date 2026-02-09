@@ -61,6 +61,7 @@ class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
 
     fun updateServerState(serverId: UUID) {
         viewModelScope.launch {
+            updateServerUiState(serverId)
             val serverData = servers.value.find { it.id == serverId }
             serverData?.updateStatue()
             updateServerUiState(serverId)
@@ -69,13 +70,13 @@ class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
 
     fun updateServersStatus() {
         viewModelScope.launch {
-            val jobs = servers.value.map { server ->
+            updateServersUiStatus()
+            servers.value.map { server ->
                 launch {
                     server.updateStatue()
+                    updateServerUiState(server.id)
                 }
             }
-            jobs.joinAll() // 等待所有协程完成
-            updateServersUiStatus()
         }
     }
 
@@ -111,6 +112,7 @@ class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
                     server.latency.value = it.latency
                     server.lastChecked.value = it.lastChecked
                     server.modLoader.value = it.modLoader
+                    server.isGettingStatue.value = it.isGettingStatue
                 }
             }
         }

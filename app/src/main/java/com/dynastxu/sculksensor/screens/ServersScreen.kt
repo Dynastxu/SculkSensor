@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -165,15 +166,22 @@ fun Server(serverData: ServerData, viewModel: ServerViewModel) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 是否在线（圆点）
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .background(
-                                color = if (serverUiState.isOnline.value) Color.Green else Color.Red,
-                                shape = CircleShape
-                            )
-                    )
+                    if (serverUiState.isGettingStatue.value) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(12.dp), // 设置大小
+                            strokeWidth = 4.dp              // 设置线条粗细
+                        )
+                    } else {
+                        // 是否在线（圆点）
+                        Box(
+                            modifier = Modifier
+                                .size(12.dp)
+                                .background(
+                                    color = if (serverUiState.isOnline.value) Color.Green else Color.Red,
+                                    shape = CircleShape
+                                )
+                        )
+                    }
 
                     Spacer(modifier = Modifier.width(4.dp))
 

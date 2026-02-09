@@ -56,14 +56,13 @@ data class ServerData(
     var playersList: List<PlayerData> = emptyList(),
     var description: String = "",
     var isOnline: Boolean = false,
-    var latency: Long = -1,
+    @Transient var latency: Long = -1,
     var lastChecked: Long? = null,
-    var modLoader: Int? = null
+    var modLoader: Int? = null,
+    @Transient var isGettingStatue: Boolean = false
 ) {
     @Transient
     private val TAG_GET_SERVER_STATUE = "服务器状态查询"
-    @Transient
-    private var isGettingStatue: Boolean = false
 
     /**
      * 获取服务器状态
@@ -176,7 +175,8 @@ data class ServerData(
             isOnline = mutableStateOf(isOnline),
             latency = mutableLongStateOf(latency),
             lastChecked = mutableStateOf(lastChecked),
-            modLoader = mutableStateOf(modLoader)
+            modLoader = mutableStateOf(modLoader),
+            isGettingStatue = mutableStateOf(isGettingStatue)
         )
     }
 
