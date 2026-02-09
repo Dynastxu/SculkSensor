@@ -9,4 +9,5 @@
     <string name="button_save">Save</string>
     <string name="button_add_server">Add Server</string>
     <string name="title_add_server">Add Server</string>
+    <string name="menu_item_delete">Delete</string>
 </resources>

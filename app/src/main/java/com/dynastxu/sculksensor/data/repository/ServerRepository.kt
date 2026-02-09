@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.util.UUID
 
 class ServerRepository(private val context: Context) {
     private val gson = Gson()
@@ -38,9 +39,9 @@ class ServerRepository(private val context: Context) {
     /**
      * 删除服务器
      */
-    suspend fun deleteServer(serverId: String) {
+    suspend fun deleteServer(serverId: UUID) {
         val currentList = getCurrentList()
-        val newList = currentList.filter { it.id.toString() != serverId }
+        val newList = currentList.filter { it.id != serverId }
         saveServerList(newList)
     }
 

@@ -2,6 +2,7 @@ package com.dynastxu.sculksensor.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,12 +18,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
@@ -55,7 +62,7 @@ fun ServersScreen(navController: NavController, viewModel: ServerViewModel) {
         // 显示服务器列表
         LazyColumn {
             items(servers) { server ->
-                Server(server = server)
+                Server(server = server, viewModel = viewModel)
             }
         }
 
@@ -77,11 +84,19 @@ fun AddServerButton(navController: NavController) {
 }
 
 @Composable
-fun Server(server: Server) {
+fun Server(server: Server, viewModel: ServerViewModel) {
+    var expanded by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .combinedClickable(
+                onLongClick = {
+                    expanded = true
+                },
+                onClick = {}
+            ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.LightGray
@@ -162,37 +177,22 @@ fun Server(server: Server) {
                 )
             }
         }
+        // 弹出菜单
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false } // 点击外部关闭菜单
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.menu_item_delete)) },
+                onClick = {
+                    onDelete(server, viewModel) // 执行删除逻辑
+                    expanded = false // 关闭菜单
+                }
+            )
+        }
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun ServerPreview() {
-    // 创建一个示例 Server 对象
-    val sampleServer = Server(
-        id = UUID.randomUUID(),
-        name = "Example Server",
-        address = "192.168.1.1",
-        port = 25565,
-        version = "1.20.1",
-        protocol = 763,
-        icon = Base64.getEncoder().encodeToString(ByteArray(0)), // 空图标数据
-        playersMax = 20,
-        playersOnline = 5,
-        players = emptyList(),
-        description = "A sample Minecraft server",
-        isOnline = true,
-        delay = 50L, // 延迟为 50ms
-        lastChecked = null
-    )
-
-    // 调用 Server Composable 函数
-    Server(server = sampleServer)
-}
-
-@Preview
-@Composable
-fun AddServerButtonPreview() {
-    AddServerButton(rememberNavController())
+fun onDelete(server: Server, viewModel: ServerViewModel) {
+    viewModel.deleteServer(server.id)
 }

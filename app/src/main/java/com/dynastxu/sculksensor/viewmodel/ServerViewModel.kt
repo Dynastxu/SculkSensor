@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
 
@@ -31,7 +32,7 @@ class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
     /**
      * 删除服务器
      */
-    fun deleteServer(serverId: String) {
+    fun deleteServer(serverId: UUID) {
         viewModelScope.launch {
             repository.deleteServer(serverId)
         }
