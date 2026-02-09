@@ -12,6 +12,8 @@ import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +23,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -105,7 +110,9 @@ fun MainApp(viewModel: ServerViewModel) {
                     else -> stringResource(R.string.app_name)
                 },
                 showBackButton = showBackButton,
-                onBackClick = { navController.navigateUp() } // 点击返回键时弹出返回栈
+                onBackClick = { navController.navigateUp() }, // 点击返回键时弹出返回栈
+                currentRoute = currentRoute,
+                viewModel = viewModel
             )
         },
         bottomBar = {
@@ -120,7 +127,7 @@ fun MainApp(viewModel: ServerViewModel) {
                             // 重要的导航选项：避免重复点击创建多个实例
                             launchSingleTop = true
                         }
-                    }
+                    },
                 )
             }
         }
@@ -165,8 +172,13 @@ fun BottomNavigationBar(
 fun AppTopBar(
     title: String,
     showBackButton: Boolean,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    currentRoute: String?,
+    viewModel: ServerViewModel
 ) {
+    // 控制菜单是否展开的状态
+    var expanded by remember { mutableStateOf(false) }
+
     CenterAlignedTopAppBar(
         title = { Text(title) },
         navigationIcon = {
@@ -177,9 +189,25 @@ fun AppTopBar(
             }
         },
         actions = {
-            // 更多选项按钮（可以后续扩展菜单）
-            IconButton(onClick = { /* 暂不处理 */ }) {
+            // 更多选项按钮
+            IconButton(onClick = { expanded = true }) {
                 Icon(Icons.Default.MoreVert, contentDescription = "更多")
+            }
+            // 下拉菜单
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false } // 点击外部区域关闭菜单
+            ) {
+                if (currentRoute == null) return@DropdownMenu
+                else if (currentRoute == ROUTE_SERVERS) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.menu_item_refresh)) },
+                        onClick = {
+                            viewModel.updateServersStatus()
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
     )
