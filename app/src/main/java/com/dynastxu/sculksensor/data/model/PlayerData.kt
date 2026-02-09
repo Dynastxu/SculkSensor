@@ -1,8 +1,8 @@
 package com.dynastxu.sculksensor.data.model
 
-data class Player(
+data class PlayerData(
     val name: String,
     val id: String,
-    val isOnline: Boolean?,
-    val lastChecked: Long?
+    var isOnline: Boolean?,
+    var lastChecked: Long?
 )

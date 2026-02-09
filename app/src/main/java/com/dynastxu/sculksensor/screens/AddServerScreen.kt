@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dynastxu.sculksensor.R
-import com.dynastxu.sculksensor.data.model.Server
+import com.dynastxu.sculksensor.data.model.ServerData
 import com.dynastxu.sculksensor.viewmodel.ServerViewModel
 
 @Composable
@@ -63,14 +63,14 @@ fun AddServerScreen(navController: NavController, viewModel: ServerViewModel) {
             onClick = {
                 if (serverName.isNotBlank() && serverAddress.isNotBlank()) {
                     // 创建 Server 对象（只存储用户输入的数据）
-                    val server = Server(
+                    val serverData = ServerData(
                         name = serverName,
-                        address = serverAddress,
+                        host = serverAddress,
                         port = serverPort.toIntOrNull() ?: 25565,
                     )
 
                     // 保存到 DataStore
-                    viewModel.addServer(server)
+                    viewModel.addServer(serverData)
 
                     // 返回上一页
                     navController.popBackStack()
