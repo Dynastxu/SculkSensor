@@ -74,7 +74,7 @@ class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
 
     fun updateServerState(serverId: UUID) {
         viewModelScope.launch {
-            updateServerUiState(serverId)
+            _serverUiStates[serverId]?.isGettingStatue?.value = true
             val serverData = servers.value.find { it.id == serverId }
             serverData?.updateStatue()
             updateServerUiState(serverId)
@@ -83,7 +83,9 @@ class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
 
     fun updateServersStatus() {
         viewModelScope.launch {
-            updateServersUiStatus()
+            _serverUiStates.forEach { (_, value) ->
+                value.isGettingStatue.value = true
+            }
             servers.value.map { server ->
                 launch {
                     server.updateStatue()
