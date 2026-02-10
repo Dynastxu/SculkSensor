@@ -242,10 +242,11 @@ fun AppTopBar(
                         )
                     }
                     ROUTE_SERVER_DETAILS -> {
+                        val selectedServerId = viewModel.selectedServerId ?: return@DropdownMenu
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.menu_item_refresh)) },
                             onClick = {
-                                viewModel.updateServersStatus()
+                                viewModel.updateServerState(selectedServerId)
                                 expanded = false
                                 showToast("刷新中", Toast.LENGTH_SHORT)
                             }
