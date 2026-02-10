@@ -127,7 +127,7 @@ data class ServerData(
                                 }
 
                                 if (map.contains("forgeData")) {
-                                    modLoader = R.string.modloader_forge
+                                    modLoader = R.string.mod_Loader_forge
                                 }
                             } catch (e: Exception) {
                                 Log.e(TAG_GET_SERVER_STATUE, "解析服务器 $host 响应失败: ${e.message}")

@@ -12,7 +12,9 @@
     <string name="menu_item_delete">Delete</string>
     <string name="menu_item_refresh">Refresh</string>
     <string name="text_offline">Offline</string>
-    <string name="modloader_forge" translatable="false">Forge</string>
+    <string name="mod_Loader_forge" translatable="false">Forge</string>
     <string name="menu_item_add_server">Add Server</string>
     <string name="title_server_details">Server Details</string>
+    <string name="text_anonymous_players">Anonymous Players:</string>
+    <string name="text_player_list">Player List</string>
 </resources>

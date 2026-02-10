@@ -27,8 +27,17 @@ class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
 
     var selectedServerId: UUID? = null
 
-    fun getServer(serverId: UUID): ServerData? {
+    fun getServer(serverId: UUID?): ServerData? {
+        if (serverId == null) return null
         return servers.value.find { it.id == serverId }
+    }
+
+    fun getSelectedServer(): ServerData? {
+        return getServer(selectedServerId)
+    }
+
+    fun getServerUiState(serverId: UUID): ServerUiState {
+        return serverUiStates.getValue(serverId)
     }
 
     /**

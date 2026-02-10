@@ -15,4 +15,6 @@
     <string name="text_offline">离线</string>
     <string name="menu_item_add_server">添加服务器</string>
     <string name="title_server_details">服务器详情</string>
+    <string name="text_anonymous_players">匿名玩家：</string>
+    <string name="text_player_list">玩家列表</string>
 </resources>
