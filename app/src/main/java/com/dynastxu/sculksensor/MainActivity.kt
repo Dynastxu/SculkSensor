@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -115,7 +116,8 @@ fun MainApp(viewModel: ServerViewModel) {
                 showBackButton = showBackButton,
                 onBackClick = { navController.navigateUp() }, // 点击返回键时弹出返回栈
                 currentRoute = currentRoute,
-                viewModel = viewModel
+                viewModel = viewModel,
+                navController = navController
             )
         },
         bottomBar = {
@@ -177,7 +179,8 @@ fun AppTopBar(
     showBackButton: Boolean,
     onBackClick: () -> Unit = {},
     currentRoute: String?,
-    viewModel: ServerViewModel
+    viewModel: ServerViewModel,
+    navController: NavController
 ) {
     // 控制菜单是否展开的状态
     var expanded by remember { mutableStateOf(false) }
@@ -218,6 +221,13 @@ fun AppTopBar(
                             viewModel.updateServersStatus()
                             expanded = false
                             showToast("刷新中", Toast.LENGTH_SHORT)
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.menu_item_add_server)) },
+                        onClick = {
+                            navController.navigate(ROUTE_ADD_SERVER)
+                            expanded = false
                         }
                     )
                 }
