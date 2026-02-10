@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.dynastxu.sculksensor.R
+import com.dynastxu.sculksensor.TAG_GET_SERVER_STATUE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -61,9 +62,6 @@ data class ServerData(
     var modLoader: Int? = null,
     @Transient var isGettingStatue: Boolean = false
 ) {
-    @Transient
-    private val TAG_GET_SERVER_STATUE = "服务器状态查询"
-
     /**
      * 获取服务器状态
      */

@@ -62,7 +62,7 @@ fun AddServerScreen(navController: NavController, viewModel: ServerViewModel) {
         Button(
             onClick = {
                 if (serverName.isNotBlank() && serverAddress.isNotBlank()) {
-                    // 创建 Server 对象（只存储用户输入的数据）
+                    // 创建 ServerListItem 对象（只存储用户输入的数据）
                     val serverData = ServerData(
                         name = serverName,
                         host = serverAddress,

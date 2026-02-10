@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
-    private val TAG_SERVER_VIEW_MODEL = "ServerViewModel"
     // 服务器列表状态
     val servers: StateFlow<List<ServerData>> = repository.getServers()
         .stateIn(
@@ -25,6 +24,12 @@ class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
     // 为每个 ServerData 创建对应的 ServerUiState
     private val _serverUiStates = mutableStateMapOf<UUID, ServerUiState>()
     val serverUiStates: Map<UUID, ServerUiState> = _serverUiStates
+
+    var selectedServerId: UUID? = null
+
+    fun getServer(serverId: UUID): ServerData? {
+        return servers.value.find { it.id == serverId }
+    }
 
     /**
      * 添加新服务器

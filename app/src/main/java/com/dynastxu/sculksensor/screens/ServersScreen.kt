@@ -45,10 +45,10 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.dynastxu.sculksensor.R
 import com.dynastxu.sculksensor.ROUTE_ADD_SERVER
-import com.dynastxu.sculksensor.data.model.ServerData
+import com.dynastxu.sculksensor.ROUTE_SERVER_DETAILS
+import com.dynastxu.sculksensor.TAG_SERVERS_SCREEN_RENDERING
 import com.dynastxu.sculksensor.viewmodel.ServerViewModel
-
-const val TAG_SERVER_SCREEN_RENDERING = "服务器列表页面渲染"
+import java.util.UUID
 
 @Composable
 fun ServersScreen(navController: NavController, viewModel: ServerViewModel) {
@@ -58,7 +58,7 @@ fun ServersScreen(navController: NavController, viewModel: ServerViewModel) {
     // 更新服务器列表
     viewModel.updateServersUiStatus()
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp), // 添加内边距
@@ -67,7 +67,7 @@ fun ServersScreen(navController: NavController, viewModel: ServerViewModel) {
         // 显示服务器列表
         LazyColumn {
             items(servers) { server ->
-                Server(serverData = server, viewModel = viewModel)
+                ServerListItem(server.id, viewModel = viewModel, navController = navController)
             }
         }
 
@@ -89,25 +89,35 @@ fun AddServerButton(navController: NavController) {
 }
 
 @Composable
-fun Server(serverData: ServerData, viewModel: ServerViewModel) {
+fun ServerListItem(
+    serverId: UUID,
+    viewModel: ServerViewModel,
+    navController: NavController,
+    clickable: Boolean = true,
+    clipImage: Boolean = true
+) {
     var expanded by remember { mutableStateOf(false) }
 
-    val serverUiState = viewModel.serverUiStates[serverData.id]
+    val serverUiState = viewModel.serverUiStates[serverId]
     if (serverUiState == null) {
-        Log.e(TAG_SERVER_SCREEN_RENDERING, "服务器列表与服务器 UI 列表不匹配（ UUID: ${serverData.id} ）")
+        Log.e(TAG_SERVERS_SCREEN_RENDERING, "服务器列表与服务器 UI 列表不匹配（ UUID: $serverId ）")
         return
     }
 
+    val cardModifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
+        modifier = if (clickable) cardModifier
             .combinedClickable(
                 onLongClick = {
                     expanded = true
                 },
-                onClick = {}
-            ),
+                onClick = {
+                    viewModel.selectedServerId = serverId
+                    navController.navigate(ROUTE_SERVER_DETAILS)
+                }
+            ) else cardModifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -128,9 +138,14 @@ fun Server(serverData: ServerData, viewModel: ServerViewModel) {
             val imageBytes = try {
                 Base64.decode(cleanedBase64String, Base64.DEFAULT)
             } catch (e: IllegalArgumentException) {
-                Log.e(TAG_SERVER_SCREEN_RENDERING, "服务器 ${serverData.host} 图片解析失败： $e")
+                Log.e(
+                    TAG_SERVERS_SCREEN_RENDERING,
+                    "服务器 ${viewModel.getServer(serverId)?.host} 图片解析失败： $e"
+                )
                 null // 如果解码失败，返回 null
             }
+            val imageModifier = Modifier
+                .size(64.dp)
             Image(
                 painter = if (imageBytes != null) {
                     // 使用 Coil 加载字节数组
@@ -145,9 +160,8 @@ fun Server(serverData: ServerData, viewModel: ServerViewModel) {
                     painterResource(R.drawable.ic_default_server)
                 },
                 contentDescription = "Server Icon",
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape),
+                modifier = if (clipImage) imageModifier
+                    .clip(CircleShape) else imageModifier,
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -187,7 +201,9 @@ fun Server(serverData: ServerData, viewModel: ServerViewModel) {
 
                     // 延迟
                     Text(
-                        text = if (serverUiState.isOnline.value) "${serverUiState.latency.value}ms" else stringResource(R.string.text_offline),
+                        text = if (serverUiState.isOnline.value) "${serverUiState.latency.value}ms" else stringResource(
+                            R.string.text_offline
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -235,26 +251,26 @@ fun Server(serverData: ServerData, viewModel: ServerViewModel) {
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.menu_item_delete)) },
                 onClick = {
-                    onDelete(serverData, viewModel) // 执行删除逻辑
+                    onDelete(serverId, viewModel) // 执行删除逻辑
                     expanded = false // 关闭菜单
                 }
             )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.menu_item_refresh)) },
                 onClick = {
-                    onRefresh(serverData, viewModel)
+                    onRefresh(serverId, viewModel)
                     expanded = false
                 }
             )
         }
     }
-    viewModel.updateServerState(serverData.id)
+    viewModel.updateServerState(serverId)
 }
 
-private fun onDelete(serverData: ServerData, viewModel: ServerViewModel) {
-    viewModel.deleteServer(serverData.id)
+private fun onDelete(serverId: UUID, viewModel: ServerViewModel) {
+    viewModel.deleteServer(serverId)
 }
 
-private fun onRefresh(serverData: ServerData, viewModel: ServerViewModel) {
-    viewModel.updateServerState(serverData.id)
+private fun onRefresh(serverId: UUID, viewModel: ServerViewModel) {
+    viewModel.updateServerState(serverId)
 }

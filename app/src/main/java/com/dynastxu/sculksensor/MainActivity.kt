@@ -44,6 +44,7 @@ import com.dynastxu.sculksensor.data.repository.ServerRepository
 import com.dynastxu.sculksensor.screens.AddServerScreen
 import com.dynastxu.sculksensor.screens.MessageScreen
 import com.dynastxu.sculksensor.screens.ProfileScreen
+import com.dynastxu.sculksensor.screens.ServerDetailsScreen
 import com.dynastxu.sculksensor.screens.ServersScreen
 import com.dynastxu.sculksensor.ui.theme.SculkSensorTheme
 import com.dynastxu.sculksensor.viewmodel.ServerViewModel
@@ -52,6 +53,12 @@ const val ROUTE_SERVERS = "servers"
 const val ROUTE_MESSAGE = "message"
 const val ROUTE_PROFILE = "profile"
 const val ROUTE_ADD_SERVER = "add_server"
+const val ROUTE_SERVER_DETAILS = "server_details"
+
+const val TAG_SERVERS_SCREEN_RENDERING = "服务器列表页面渲染"
+const val TAG_GET_SERVER_STATUE = "服务器状态查询"
+const val TAG_SERVER_VIEW_MODEL = "ServerViewModel"
+const val TAG_SERVER_DETAILS_SCREEN_RENDERING = "服务器详情页面渲染"
 
 class MainActivity : ComponentActivity() {
     // 创建 Repository 实例
@@ -111,6 +118,7 @@ fun MainApp(viewModel: ServerViewModel) {
                     ROUTE_MESSAGE -> stringResource(R.string.title_message)
                     ROUTE_PROFILE -> stringResource(R.string.title_person)
                     ROUTE_ADD_SERVER -> stringResource(R.string.title_add_server)
+                    ROUTE_SERVER_DETAILS -> stringResource(R.string.title_server_details)
                     else -> stringResource(R.string.app_name)
                 },
                 showBackButton = showBackButton,
@@ -149,6 +157,7 @@ fun MainApp(viewModel: ServerViewModel) {
             composable(ROUTE_MESSAGE) { MessageScreen() }
             composable(ROUTE_PROFILE) { ProfileScreen() }
             composable(ROUTE_ADD_SERVER) { AddServerScreen(navController = navController, viewModel = viewModel) }
+            composable(ROUTE_SERVER_DETAILS) { ServerDetailsScreen(navController = navController, viewModel = viewModel) }
         }
     }
 }
