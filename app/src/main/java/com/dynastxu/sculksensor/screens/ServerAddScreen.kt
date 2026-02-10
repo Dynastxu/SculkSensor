@@ -46,7 +46,7 @@ fun AddServerScreen(navController: NavController, viewModel: ServerViewModel) {
         OutlinedTextField(
             value = serverAddress,
             onValueChange = { serverAddress = it },
-            label = { Text(stringResource(R.string.label_server_address)) },
+            label = { Text(stringResource(R.string.label_server_host)) },
             modifier = Modifier.fillMaxWidth()
         )
 

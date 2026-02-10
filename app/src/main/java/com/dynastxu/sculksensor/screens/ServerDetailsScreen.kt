@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import com.dynastxu.sculksensor.R
 import com.dynastxu.sculksensor.TAG_SERVER_DETAILS_SCREEN_RENDERING
 import com.dynastxu.sculksensor.data.model.PlayerData
+import com.dynastxu.sculksensor.data.model.ServerUiState
 import com.dynastxu.sculksensor.viewmodel.ServerViewModel
 
 @Composable
@@ -44,6 +45,7 @@ fun ServerDetailsScreen(navController: NavController, viewModel: ServerViewModel
             showDescription = true
         )
         PlayerList(server.playersList, server.playersOnline)
+        ServerDetailsForm(viewModel.getServerUiState(server.id))
     }
 }
 
@@ -83,12 +85,112 @@ fun PlayerList(playerList: List<PlayerData>?, playerOnline: Int) {
 
 @Composable
 fun PlayerListItem(playerData: PlayerData) {
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Start // 让内容居左
     ) {
         Spacer(Modifier.height(4.dp))
         Text(playerData.name)
+    }
+}
+
+@Composable
+fun ServerDetailsForm(serverUiState: ServerUiState) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            // 表格标题
+            Text(
+                text = stringResource(R.string.text_server_details),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // 表格内容
+            DetailRow(label = stringResource(R.string.label_name), value = serverUiState.name.value)
+            DetailRow(label = stringResource(R.string.label_host), value = serverUiState.host.value)
+            DetailRow(
+                label = stringResource(R.string.label_port),
+                value = serverUiState.port.value.toString()
+            )
+            DetailRow(
+                label = stringResource(R.string.label_version),
+                value = serverUiState.version.value
+            )
+            DetailRow(
+                label = stringResource(R.string.label_protocol),
+                value = serverUiState.protocol.value.toString()
+            )
+            DetailRow(
+                label = stringResource(R.string.label_player_max),
+                value = serverUiState.playersMax.value.toString()
+            )
+            DetailRow(
+                label = stringResource(R.string.label_player_online),
+                value = serverUiState.playersOnline.value.toString()
+            )
+            DetailRow(
+                label = stringResource(R.string.label_description),
+                value = if (serverUiState.description.value.trim().length <= 30) serverUiState.description.value.trim() else "${
+                    serverUiState.description.value.trim().substring(
+                        0,
+                        29
+                    )
+                }..."
+            )
+            DetailRow(
+                label = stringResource(R.string.label_is_online),
+                value = stringResource(if (serverUiState.isOnline.value) R.string._true_ else R.string._false_)
+            )
+            DetailRow(
+                label = stringResource(R.string.label_latency),
+                value = "${serverUiState.latency.value} ms"
+            )
+            serverUiState.lastChecked.value?.let {
+                DetailRow(
+                    label = stringResource(R.string.label_last_checked),
+                    value = java.text.SimpleDateFormat(
+                        "yyyy-MM-dd HH:mm:ss",
+                        java.util.Locale.getDefault()
+                    ).format(java.util.Date(it))
+                )
+            }
+            serverUiState.modLoader.value?.let {
+                DetailRow(
+                    label = stringResource(R.string.label_mod_loader),
+                    value = stringResource(serverUiState.modLoader.value!!)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }

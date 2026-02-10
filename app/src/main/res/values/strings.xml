@@ -4,7 +4,7 @@
     <string name="title_message">Message</string>
     <string name="title_person">Personal</string>
     <string name="label_server_name">Server Name</string>
-    <string name="label_server_address">Server Address</string>
+    <string name="label_server_host">Server Address</string>
     <string name="label_server_port">Server Port</string>
     <string name="button_save">Save</string>
     <string name="button_add_server">Add Server</string>
@@ -17,4 +17,19 @@
     <string name="title_server_details">Server Details</string>
     <string name="text_anonymous_players">Anonymous Players:</string>
     <string name="text_player_list">Player List</string>
+    <string name="text_server_details">Server Details</string>
+    <string name="label_name">Name</string>
+    <string name="label_host">Host</string>
+    <string name="label_port">Port</string>
+    <string name="label_version">Version</string>
+    <string name="label_protocol">Network Protocol</string>
+    <string name="label_player_max">Max num of players</string>
+    <string name="label_player_online">Online num of players</string>
+    <string name="label_description">Description</string>
+    <string name="label_is_online">Is Online</string>
+    <string name="_true_">True</string>
+    <string name="_false_">False</string>
+    <string name="label_latency">Latency</string>
+    <string name="label_last_checked">Final Check Time</string>
+    <string name="label_mod_loader">Mod Loader</string>
 </resources>

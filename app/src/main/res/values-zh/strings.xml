@@ -5,7 +5,7 @@
     <string name="title_message">消息</string>
     <string name="title_person">我的</string>
     <string name="label_server_name">服务器名称</string>
-    <string name="label_server_address">服务器地址</string>
+    <string name="label_server_host">服务器地址</string>
     <string name="label_server_port">服务器端口</string>
     <string name="button_save">保存</string>
     <string name="button_add_server">添加服务器</string>
@@ -17,4 +17,19 @@
     <string name="title_server_details">服务器详情</string>
     <string name="text_anonymous_players">匿名玩家：</string>
     <string name="text_player_list">玩家列表</string>
+    <string name="text_server_details">服务器详情</string>
+    <string name="label_name">名称</string>
+    <string name="label_host">主机地址</string>
+    <string name="label_port">端口</string>
+    <string name="label_version">版本</string>
+    <string name="label_protocol">通信协议</string>
+    <string name="label_player_max">最大玩家数</string>
+    <string name="label_player_online">在线玩家数</string>
+    <string name="label_description">描述</string>
+    <string name="label_is_online">是否在线</string>
+    <string name="_true_">是</string>
+    <string name="_false_">否</string>
+    <string name="label_latency">延迟</string>
+    <string name="label_last_checked">最后检查时间</string>
+    <string name="label_mod_loader">模组加载器</string>
 </resources>
