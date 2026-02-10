@@ -25,8 +25,14 @@ import com.dynastxu.sculksensor.viewmodel.ServerViewModel
 @Composable
 fun AddServerScreen(navController: NavController, viewModel: ServerViewModel) {
     var serverName by remember { mutableStateOf("") }
-    var serverAddress by remember { mutableStateOf("") }
+    var serverHost by remember { mutableStateOf("") }
     var serverPort by remember { mutableStateOf("") }
+    var serverNameError by remember { mutableStateOf(false) }
+    var serverHostError by remember { mutableStateOf(false) }
+    var serverPortError by remember { mutableStateOf(false) }
+    var serverNameErrorInfo by remember { mutableStateOf("") }
+    var serverHostErrorInfo by remember { mutableStateOf("") }
+    var serverPortErrorInfo by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -39,15 +45,23 @@ fun AddServerScreen(navController: NavController, viewModel: ServerViewModel) {
             value = serverName,
             onValueChange = { serverName = it },
             label = { Text(stringResource(R.string.label_server_name)) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = serverNameError,
+            supportingText = {
+                if (serverNameError) Text(serverNameErrorInfo)
+            }
         )
 
         // 服务器地址输入框
         OutlinedTextField(
-            value = serverAddress,
-            onValueChange = { serverAddress = it },
+            value = serverHost,
+            onValueChange = { serverHost = it },
             label = { Text(stringResource(R.string.label_server_host)) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = serverHostError,
+            supportingText = {
+                if (serverHostError) Text(serverHostErrorInfo)
+            }
         )
 
         // 服务器端口输入框
@@ -55,28 +69,69 @@ fun AddServerScreen(navController: NavController, viewModel: ServerViewModel) {
             value = serverPort,
             onValueChange = { serverPort = it },
             label = { Text(stringResource(R.string.label_server_port)) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = serverPortError,
+            supportingText = {
+                if (serverPortError) Text(serverPortErrorInfo)
+            },
+            placeholder = { Text("25565") }
         )
 
+        // 因为无法在 OnClick 里直接调用 stringResource ，所以写在外面
+        val errorServerNameBlankString = stringResource(R.string.error_server_name_blank)
+        val errorServerHostBlankString = stringResource(R.string.error_server_host_blank)
+        val errorServerPortOutOfRangeString = stringResource(R.string.error_server_port_out_of_range)
+        val errorServerPortNotIntString = stringResource(R.string.error_server_port_not_int)
         // 保存按钮
         Button(
             onClick = {
-                if (serverName.isNotBlank() && serverAddress.isNotBlank()) {
-                    // 创建 ServerListItem 对象（只存储用户输入的数据）
-                    val serverData = ServerData(
-                        name = serverName,
-                        host = serverAddress,
-                        port = serverPort.toIntOrNull() ?: 25565,
-                    )
-
-                    // 保存到 DataStore
-                    viewModel.addServer(serverData)
-
-                    // 返回上一页
-                    navController.popBackStack()
+                // 检测名称
+                if (serverName.isBlank()) {
+                    serverNameError = true
+                    serverNameErrorInfo = errorServerNameBlankString
+                    return@Button
                 } else {
-                    // 可以添加错误提示
+                    serverNameError = false
+                    serverNameErrorInfo = ""
                 }
+                // 检查主机地址
+                if (serverHost.isBlank()) {
+                    serverHostError = true
+                    serverHostErrorInfo = errorServerHostBlankString
+                    return@Button
+                } else {
+                    serverHostError = false
+                    serverHostErrorInfo = ""
+                }
+                var port = 25565
+                // 检查端口号
+                if (serverPort.isNotBlank()) {
+                    if (serverPort.toIntOrNull() == null) {
+                        serverPortError = true
+                        serverPortErrorInfo = errorServerPortNotIntString
+                        return@Button
+                    } else if (serverPort.toInt() !in 1..65535) {
+                            serverPortError = true
+                            serverPortErrorInfo = errorServerPortOutOfRangeString
+                            return@Button
+                    } else {
+                        serverPortError = false
+                        serverPortErrorInfo = ""
+                        port = serverPort.toInt()
+                    }
+                }
+                // 创建服务器数据
+                val serverData = ServerData(
+                    name = serverName,
+                    host = serverHost,
+                    port = port
+                )
+
+                // 保存到 DataStore
+                viewModel.addServer(serverData)
+
+                // 返回上一页
+                navController.navigateUp()
             },
             modifier = Modifier.align(Alignment.End)
         ) {

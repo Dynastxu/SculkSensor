@@ -32,4 +32,8 @@
     <string name="label_latency">Latency</string>
     <string name="label_last_checked">Final Check Time</string>
     <string name="label_mod_loader">Mod Loader</string>
+    <string name="error_server_name_blank">Server name could not been blank</string>
+    <string name="error_server_host_blank">Server host could not been blank</string>
+    <string name="error_server_port_out_of_range">Server port must in range 1 ~ 25565</string>
+    <string name="error_server_port_not_int">Server port must be integer</string>
 </resources>
