@@ -92,7 +92,7 @@ data class BottomNavItem(
 
 @Composable
 fun MainApp(viewModel: ServerViewModel) {
-    // 1. 创建导航控制器，它是所有导航操作的核心
+    // 1. 创建导航控制器
     val navController = rememberNavController()
 
     // 2. 观察返回栈状态，获取当前路由
@@ -107,7 +107,7 @@ fun MainApp(viewModel: ServerViewModel) {
     )
 
     // 4. 判断是否显示返回键
-    val showBackButton = (currentRoute != ROUTE_SERVERS) and (currentRoute != ROUTE_MESSAGE) and (currentRoute != ROUTE_PROFILE)
+    val showBackButton = currentRoute != ROUTE_SERVERS && currentRoute != ROUTE_MESSAGE && currentRoute != ROUTE_PROFILE
 
     Scaffold(
         topBar = {
@@ -130,14 +130,14 @@ fun MainApp(viewModel: ServerViewModel) {
         },
         bottomBar = {
             // 底部导航栏
-            // 仅在三个主页面显示底部栏（简单示例，可根据需要调整）
+            // 仅在三个主页面显示底部栏
             if (currentRoute in listOf(ROUTE_SERVERS, ROUTE_MESSAGE, ROUTE_PROFILE)) {
                 BottomNavigationBar(
                     items = bottomNavItems,
                     currentRoute = currentRoute,
                     onItemClick = { route ->
                         navController.navigate(route) {
-                            // 重要的导航选项：避免重复点击创建多个实例
+                            // 避免重复点击创建多个实例
                             launchSingleTop = true
                         }
                     },
@@ -256,7 +256,7 @@ fun AppTopBar(
             }
         }
     )
-    // 使用 LaunchedEffect 处理 Toast 显示
+    // 处理 Toast 显示
     if (showToast) {
         Toast.makeText(LocalContext.current, showToastText, showToastDuration).show()
         showToast = false // 重置状态
