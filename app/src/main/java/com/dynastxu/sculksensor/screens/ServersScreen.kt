@@ -94,7 +94,8 @@ fun ServerListItem(
     viewModel: ServerViewModel,
     navController: NavController,
     clickable: Boolean = true,
-    clipImage: Boolean = true
+    clipImage: Boolean = true,
+    showDescription: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -120,127 +121,141 @@ fun ServerListItem(
             ) else cardModifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
         ) {
-            // 图片（最左边）
-            val base64String = serverUiState.icon.value
-
-            // 去除非法字符
-            val cleanedBase64String = base64String
-                .substringAfter("base64,") // 去除 data:image/png;base64, 前缀
-                .replace("\\u003d", "=")   // 解码 Unicode 转义字符
-
-            // 解码 base64 字符串为字节数组
-            val imageBytes = try {
-                Base64.decode(cleanedBase64String, Base64.DEFAULT)
-            } catch (e: IllegalArgumentException) {
-                Log.e(
-                    TAG_SERVERS_SCREEN_RENDERING,
-                    "服务器 ${viewModel.getServer(serverId)?.host} 图片解析失败： $e"
-                )
-                null // 如果解码失败，返回 null
-            }
-            val imageModifier = Modifier
-                .size(64.dp)
-            Image(
-                painter = if (imageBytes != null) {
-                    // 使用 Coil 加载字节数组
-                    rememberAsyncImagePainter(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(imageBytes)
-                            .size(Size.ORIGINAL)
-                            .build()
-                    )
-                } else {
-                    // 解码失败时使用默认占位图
-                    painterResource(R.drawable.ic_default_server)
-                },
-                contentDescription = "Server Icon",
-                modifier = if (clipImage) imageModifier
-                    .clip(CircleShape) else imageModifier,
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // 中间部分
-            Column(
-                modifier = Modifier.weight(1f)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // 名称（上面）
-                Text(
-                    text = serverUiState.name.value,
-                    style = MaterialTheme.typography.titleMedium
-                )
+                // 图片（最左边）
+                val base64String = serverUiState.icon.value
 
-                // 是否在线（圆点） + 延迟
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (serverUiState.isGettingStatue.value) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(12.dp), // 设置大小
-                            strokeWidth = 4.dp              // 设置线条粗细
+                // 去除非法字符
+                val cleanedBase64String = base64String
+                    .substringAfter("base64,") // 去除 data:image/png;base64, 前缀
+                    .replace("\\u003d", "=")   // 解码 Unicode 转义字符
+
+                // 解码 base64 字符串为字节数组
+                val imageBytes = try {
+                    Base64.decode(cleanedBase64String, Base64.DEFAULT)
+                } catch (e: IllegalArgumentException) {
+                    Log.e(
+                        TAG_SERVERS_SCREEN_RENDERING,
+                        "服务器 ${viewModel.getServer(serverId)?.host} 图片解析失败： $e"
+                    )
+                    null // 如果解码失败，返回 null
+                }
+                val imageModifier = Modifier
+                    .size(64.dp)
+                Image(
+                    painter = if (imageBytes != null) {
+                        // 使用 Coil 加载字节数组
+                        rememberAsyncImagePainter(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(imageBytes)
+                                .size(Size.ORIGINAL)
+                                .build()
                         )
                     } else {
-                        // 是否在线（圆点）
-                        Box(
-                            modifier = Modifier
-                                .size(12.dp)
-                                .background(
-                                    color = if (serverUiState.isOnline.value) Color.Green else Color.Red,
-                                    shape = CircleShape
-                                )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    // 延迟
-                    Text(
-                        text = if (serverUiState.isOnline.value) "${serverUiState.latency.value}ms" else stringResource(
-                            R.string.text_offline
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            // 最右边部分
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
-                // 在线人数
-                Text(
-                    text = if (serverUiState.isOnline.value) "${serverUiState.playersOnline.value}/${serverUiState.playersMax.value}" else "--/--",
-                    style = MaterialTheme.typography.bodyMedium
+                        // 解码失败时使用默认占位图
+                        painterResource(R.drawable.ic_default_server)
+                    },
+                    contentDescription = "Server Icon",
+                    modifier = if (clipImage) imageModifier
+                        .clip(CircleShape) else imageModifier,
                 )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // 中间部分
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    // 版本
+                    // 名称（上面）
                     Text(
-                        text = if (serverUiState.isOnline.value) serverUiState.version.value else "--",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = serverUiState.name.value,
+                        style = MaterialTheme.typography.titleMedium
                     )
 
-                    Spacer(modifier = Modifier.width(4.dp))
+                    // 是否在线（圆点） + 延迟
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (serverUiState.isGettingStatue.value) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(12.dp), // 设置大小
+                                strokeWidth = 4.dp              // 设置线条粗细
+                            )
+                        } else {
+                            // 是否在线（圆点）
+                            Box(
+                                modifier = Modifier
+                                    .size(12.dp)
+                                    .background(
+                                        color = if (serverUiState.isOnline.value) Color.Green else Color.Red,
+                                        shape = CircleShape
+                                    )
+                            )
+                        }
 
-                    // Mod 加载器
-                    Text(
-                        text = if (serverUiState.modLoader.value == null) "" else stringResource(
-                            serverUiState.modLoader.value!!
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        // 延迟
+                        Text(
+                            text = if (serverUiState.isOnline.value) "${serverUiState.latency.value}ms" else stringResource(
+                                R.string.text_offline
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
+
+                // 最右边部分
+                Column(
+                    horizontalAlignment = Alignment.End
+                ) {
+                    // 在线人数
+                    Text(
+                        text = if (serverUiState.isOnline.value) "${serverUiState.playersOnline.value}/${serverUiState.playersMax.value}" else "--/--",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // 版本
+                        Text(
+                            text = if (serverUiState.isOnline.value) serverUiState.version.value else "--",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        // Mod 加载器
+                        Text(
+                            text = if (serverUiState.modLoader.value == null) "" else stringResource(
+                                serverUiState.modLoader.value!!
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+            if (showDescription) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = serverUiState.description.value,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.align(Alignment.Start).padding(4.dp)
+                )
             }
         }
         // 弹出菜单

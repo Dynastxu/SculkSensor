@@ -40,7 +40,8 @@ fun ServerDetailsScreen(navController: NavController, viewModel: ServerViewModel
             viewModel = viewModel,
             navController = navController,
             clickable = false,
-            clipImage = false
+            clipImage = false,
+            showDescription = true
         )
         PlayerList(server.playersList, server.playersOnline)
     }
@@ -64,6 +65,7 @@ fun PlayerList(playerList: List<PlayerData>?, playerOnline: Int) {
             Text(
                 text = stringResource(R.string.text_player_list),
                 style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(Modifier.height(4.dp))
             if (!playerList.isEmpty()) {
