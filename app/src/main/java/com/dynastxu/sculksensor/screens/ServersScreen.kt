@@ -116,6 +116,9 @@ fun ServerListItem(
         return
     }
 
+    viewModel.updateServerState(serverId)
+    serverUiState.isGettingStatue.value = true
+
     val cardModifier = Modifier
         .fillMaxWidth()
         .padding(8.dp)
@@ -268,7 +271,6 @@ fun ServerListItem(
             )
         }
     }
-    viewModel.updateServerState(serverId)
 }
 
 private fun onDelete(serverId: UUID, viewModel: ServerViewModel) {
