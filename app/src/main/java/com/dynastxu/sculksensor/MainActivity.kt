@@ -222,23 +222,35 @@ fun AppTopBar(
                 expanded = expanded,
                 onDismissRequest = { expanded = false } // 点击外部区域关闭菜单
             ) {
-                if (currentRoute == null) return@DropdownMenu
-                else if (currentRoute == ROUTE_SERVERS) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.menu_item_refresh)) },
-                        onClick = {
-                            viewModel.updateServersStatus()
-                            expanded = false
-                            showToast("刷新中", Toast.LENGTH_SHORT)
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.menu_item_add_server)) },
-                        onClick = {
-                            navController.navigate(ROUTE_ADD_SERVER)
-                            expanded = false
-                        }
-                    )
+                when (currentRoute) {
+                    null -> return@DropdownMenu
+                    ROUTE_SERVERS -> {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_item_refresh)) },
+                            onClick = {
+                                viewModel.updateServersStatus()
+                                expanded = false
+                                showToast("刷新中", Toast.LENGTH_SHORT)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_item_add_server)) },
+                            onClick = {
+                                navController.navigate(ROUTE_ADD_SERVER)
+                                expanded = false
+                            }
+                        )
+                    }
+                    ROUTE_SERVER_DETAILS -> {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_item_refresh)) },
+                            onClick = {
+                                viewModel.updateServersStatus()
+                                expanded = false
+                                showToast("刷新中", Toast.LENGTH_SHORT)
+                            }
+                        )
+                    }
                 }
             }
         }
