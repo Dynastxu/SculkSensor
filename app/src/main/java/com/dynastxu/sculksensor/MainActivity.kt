@@ -63,6 +63,7 @@ const val TAG_SERVER_DETAILS_SCREEN_RENDERING = "服务器详情页面渲染"
 class MainActivity : ComponentActivity() {
     // 创建 Repository 实例
     private val repository by lazy { ServerRepository(applicationContext) }
+    private lateinit var viewModel: ServerViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +71,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SculkSensorTheme {
                 // 使用自定义 ViewModel 工厂
-                val viewModel: ServerViewModel = viewModel(
+                viewModel = viewModel(
                     factory = object : ViewModelProvider.Factory {
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
                             @Suppress("UNCHECKED_CAST")
@@ -81,6 +82,11 @@ class MainActivity : ComponentActivity() {
                 MainApp(viewModel)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.saveServersStatues()
     }
 }
 

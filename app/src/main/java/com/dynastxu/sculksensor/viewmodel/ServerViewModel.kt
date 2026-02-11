@@ -76,8 +76,21 @@ class ServerViewModel(private val repository: ServerRepository) : ViewModel() {
         viewModelScope.launch {
             _serverUiStates[serverId]?.isGettingStatue?.value = true
             val serverData = servers.value.find { it.id == serverId }
-            serverData?.updateStatue()
+            if (serverData == null) return@launch
+            serverData.updateStatue()
             updateServerUiState(serverId)
+        }
+    }
+
+    fun updateServer(serverData: ServerData) {
+        viewModelScope.launch {
+            repository.updateServer(serverData)
+        }
+    }
+
+    fun saveServersStatues() {
+        viewModelScope.launch {
+            repository.saveServersStatues(servers.value)
         }
     }
 

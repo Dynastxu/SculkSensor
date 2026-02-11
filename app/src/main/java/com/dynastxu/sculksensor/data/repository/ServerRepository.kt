@@ -45,6 +45,25 @@ class ServerRepository(private val context: Context) {
         saveServerList(newList)
     }
 
+    /**
+     * 更新服务器
+     * @param serverData 要更新的服务器数据
+     */
+    suspend fun updateServer(serverData: ServerData) {
+        val currentList = getCurrentList()
+        val newList = currentList.map { if (it.id == serverData.id) serverData else it }
+        saveServerList(newList)
+    }
+
+    suspend fun saveServersStatues(serversDatas: List<ServerData>) {
+        val currentList = getCurrentList()
+        val newList = serversDatas.map { serverData ->
+            val currentServer = currentList.find { it.id == serverData.id }
+            currentServer ?: serverData
+        }
+        saveServerList(newList)
+    }
+
     // 私有辅助方法
     private suspend fun getCurrentList(): List<ServerData> {
         val json = AppDataStore.getServerList(context).first() // 注意：这里需要协程支持

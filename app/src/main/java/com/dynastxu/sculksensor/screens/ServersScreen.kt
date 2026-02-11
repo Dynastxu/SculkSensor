@@ -152,7 +152,7 @@ fun ServerListItem(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Column (
+                Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -196,7 +196,7 @@ fun ServerListItem(
 
                                 // 延迟
                                 Text(
-                                    text = if (serverUiState.isOnline.value) "${serverUiState.latency.value}ms" else stringResource(
+                                    text = if (serverUiState.isOnline.value) "${if (serverUiState.latency.value > 0) serverUiState.latency.value else "--"}ms" else stringResource(
                                         R.string.text_offline
                                     ),
                                     style = MaterialTheme.typography.bodySmall,
@@ -244,7 +244,10 @@ fun ServerListItem(
                             text = parseMinecraftFormatting(serverUiState.description.value),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.align(Alignment.Start).fillMaxWidth().padding(start = 8.dp, end = 8.dp)
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .fillMaxWidth()
+                                .padding(start = 8.dp, end = 8.dp)
                         )
                     }
                 }
@@ -282,7 +285,7 @@ private fun onRefresh(serverId: UUID, viewModel: ServerViewModel) {
 }
 
 @Composable
-fun ServerImage(serverUiState: ServerUiState, clipImage: Boolean){
+fun ServerImage(serverUiState: ServerUiState, clipImage: Boolean) {
     // 图片
     val base64String = serverUiState.icon.value
 
