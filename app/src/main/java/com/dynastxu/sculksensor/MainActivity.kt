@@ -42,11 +42,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dynastxu.sculksensor.data.repository.ServerRepository
 import com.dynastxu.sculksensor.screens.AddServerScreen
+import com.dynastxu.sculksensor.screens.ImageScreen
 import com.dynastxu.sculksensor.screens.MessageScreen
 import com.dynastxu.sculksensor.screens.ProfileScreen
 import com.dynastxu.sculksensor.screens.ServerDetailsScreen
 import com.dynastxu.sculksensor.screens.ServersScreen
 import com.dynastxu.sculksensor.ui.theme.SculkSensorTheme
+import com.dynastxu.sculksensor.viewmodel.ImageViewModel
 import com.dynastxu.sculksensor.viewmodel.ServerViewModel
 
 const val ROUTE_SERVERS = "servers"
@@ -54,8 +56,10 @@ const val ROUTE_MESSAGE = "message"
 const val ROUTE_PROFILE = "profile"
 const val ROUTE_ADD_SERVER = "add_server"
 const val ROUTE_SERVER_DETAILS = "server_details"
+const val ROUTE_IMAGE = "image"
 
 const val TAG_SERVERS_SCREEN_RENDERING = "服务器列表页面渲染"
+const val TAG_IMAGE_SCREEN_RENDERING = "图片页面渲染"
 const val TAG_GET_SERVER_STATUE = "服务器状态查询"
 const val TAG_SERVER_VIEW_MODEL = "ServerViewModel"
 const val TAG_SERVER_DETAILS_SCREEN_RENDERING = "服务器详情页面渲染"
@@ -63,7 +67,8 @@ const val TAG_SERVER_DETAILS_SCREEN_RENDERING = "服务器详情页面渲染"
 class MainActivity : ComponentActivity() {
     // 创建 Repository 实例
     private val repository by lazy { ServerRepository(applicationContext) }
-    private lateinit var viewModel: ServerViewModel
+    private lateinit var serverViewModel: ServerViewModel
+    private lateinit var imageViewModel: ImageViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +76,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SculkSensorTheme {
                 // 使用自定义 ViewModel 工厂
-                viewModel = viewModel(
+                serverViewModel = viewModel(
                     factory = object : ViewModelProvider.Factory {
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
                             @Suppress("UNCHECKED_CAST")
@@ -79,14 +84,15 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 )
-                MainApp(viewModel)
+                imageViewModel = viewModel()
+                MainApp(serverViewModel, imageViewModel)
             }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.saveServersStatues()
+        serverViewModel.saveServersStatues()
     }
 }
 
@@ -97,7 +103,7 @@ data class BottomNavItem(
 )
 
 @Composable
-fun MainApp(viewModel: ServerViewModel) {
+fun MainApp(serverViewModel: ServerViewModel, imageViewModel: ImageViewModel) {
     // 1. 创建导航控制器
     val navController = rememberNavController()
 
@@ -107,13 +113,26 @@ fun MainApp(viewModel: ServerViewModel) {
 
     // 3. 定义底部导航的三个项目
     val bottomNavItems = listOf(
-        BottomNavItem(title = stringResource(R.string.title_servers), icon = Icons.AutoMirrored.Filled.List, route = ROUTE_SERVERS),
-        BottomNavItem(title = stringResource(R.string.title_message), icon = Icons.AutoMirrored.Filled.Message, route = ROUTE_MESSAGE),
-        BottomNavItem(title = stringResource(R.string.title_person), icon = Icons.Default.Person, route = ROUTE_PROFILE)
+        BottomNavItem(
+            title = stringResource(R.string.title_servers),
+            icon = Icons.AutoMirrored.Filled.List,
+            route = ROUTE_SERVERS
+        ),
+        BottomNavItem(
+            title = stringResource(R.string.title_message),
+            icon = Icons.AutoMirrored.Filled.Message,
+            route = ROUTE_MESSAGE
+        ),
+        BottomNavItem(
+            title = stringResource(R.string.title_person),
+            icon = Icons.Default.Person,
+            route = ROUTE_PROFILE
+        )
     )
 
     // 4. 判断是否显示返回键
-    val showBackButton = currentRoute != ROUTE_SERVERS && currentRoute != ROUTE_MESSAGE && currentRoute != ROUTE_PROFILE
+    val showBackButton =
+        currentRoute != ROUTE_SERVERS && currentRoute != ROUTE_MESSAGE && currentRoute != ROUTE_PROFILE
 
     Scaffold(
         topBar = {
@@ -130,8 +149,8 @@ fun MainApp(viewModel: ServerViewModel) {
                 showBackButton = showBackButton,
                 onBackClick = { navController.navigateUp() }, // 点击返回键时弹出返回栈
                 currentRoute = currentRoute,
-                viewModel = viewModel,
-                navController = navController
+                viewModel = serverViewModel,
+                navController = navController,
             )
         },
         bottomBar = {
@@ -159,11 +178,28 @@ fun MainApp(viewModel: ServerViewModel) {
             modifier = Modifier.padding(innerPadding)
         ) {
             // 将路由与前面定义的页面组件关联起来
-            composable(ROUTE_SERVERS) { ServersScreen(navController = navController, viewModel = viewModel) }
+            composable(ROUTE_SERVERS) {
+                ServersScreen(
+                    navController,
+                    serverViewModel
+                )
+            }
             composable(ROUTE_MESSAGE) { MessageScreen() }
             composable(ROUTE_PROFILE) { ProfileScreen() }
-            composable(ROUTE_ADD_SERVER) { AddServerScreen(navController = navController, viewModel = viewModel) }
-            composable(ROUTE_SERVER_DETAILS) { ServerDetailsScreen(navController = navController, viewModel = viewModel) }
+            composable(ROUTE_ADD_SERVER) {
+                AddServerScreen(
+                    navController = navController,
+                    viewModel = serverViewModel
+                )
+            }
+            composable(ROUTE_SERVER_DETAILS) {
+                ServerDetailsScreen(
+                    navController,
+                    serverViewModel,
+                    imageViewModel
+                )
+            }
+            composable(ROUTE_IMAGE) { ImageScreen(navController, imageViewModel) }
         }
     }
 }
@@ -203,7 +239,7 @@ fun AppTopBar(
     var showToastText by remember { mutableStateOf("") }
     var showToastDuration by remember { mutableIntStateOf(Toast.LENGTH_SHORT) }
 
-    fun showToast(text: String, duration: Int){
+    fun showToast(text: String, duration: Int) {
         showToast = true
         showToastText = text
         showToastDuration = duration
@@ -247,6 +283,7 @@ fun AppTopBar(
                             }
                         )
                     }
+
                     ROUTE_SERVER_DETAILS -> {
                         val selectedServerId = viewModel.selectedServerId ?: return@DropdownMenu
                         DropdownMenuItem(

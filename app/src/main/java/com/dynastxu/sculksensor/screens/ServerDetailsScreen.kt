@@ -21,11 +21,12 @@ import com.dynastxu.sculksensor.R
 import com.dynastxu.sculksensor.TAG_SERVER_DETAILS_SCREEN_RENDERING
 import com.dynastxu.sculksensor.data.model.PlayerData
 import com.dynastxu.sculksensor.data.model.ServerUiState
+import com.dynastxu.sculksensor.viewmodel.ImageViewModel
 import com.dynastxu.sculksensor.viewmodel.ServerViewModel
 
 @Composable
-fun ServerDetailsScreen(navController: NavController, viewModel: ServerViewModel) {
-    val server = viewModel.getSelectedServer()
+fun ServerDetailsScreen(navController: NavController, serverViewModel: ServerViewModel, imageViewModel: ImageViewModel) {
+    val server = serverViewModel.getSelectedServer()
     if (server == null) {
         Log.e(TAG_SERVER_DETAILS_SCREEN_RENDERING, "未选择服务器")
         return
@@ -38,14 +39,16 @@ fun ServerDetailsScreen(navController: NavController, viewModel: ServerViewModel
     ) {
         ServerListItem(
             serverId = server.id,
-            viewModel = viewModel,
+            serverViewModel = serverViewModel,
+            imageViewModel = imageViewModel,
             navController = navController,
             clickable = false,
             clipImage = false,
-            showDescription = true
+            showDescription = true,
+            isImageClickable = true
         )
         PlayerList(server.playersList, server.playersOnline)
-        ServerDetailsForm(viewModel.getServerUiState(server.id))
+        ServerDetailsForm(serverViewModel.getServerUiState(server.id))
     }
 }
 

@@ -52,9 +52,11 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.dynastxu.sculksensor.R
 import com.dynastxu.sculksensor.ROUTE_ADD_SERVER
+import com.dynastxu.sculksensor.ROUTE_IMAGE
 import com.dynastxu.sculksensor.ROUTE_SERVER_DETAILS
 import com.dynastxu.sculksensor.TAG_SERVERS_SCREEN_RENDERING
 import com.dynastxu.sculksensor.data.model.ServerUiState
+import com.dynastxu.sculksensor.viewmodel.ImageViewModel
 import com.dynastxu.sculksensor.viewmodel.ServerViewModel
 import java.util.UUID
 
@@ -78,7 +80,7 @@ fun ServersScreen(navController: NavController, viewModel: ServerViewModel) {
         // 显示服务器列表
         LazyColumn {
             items(servers) { server ->
-                ServerListItem(server.id, viewModel = viewModel, navController = navController)
+                ServerListItem(server.id, serverViewModel = viewModel, navController = navController)
             }
         }
 
@@ -102,21 +104,23 @@ fun AddServerButton(navController: NavController) {
 @Composable
 fun ServerListItem(
     serverId: UUID,
-    viewModel: ServerViewModel,
+    serverViewModel: ServerViewModel,
+    imageViewModel: ImageViewModel? = null,
     navController: NavController,
     clickable: Boolean = true,
     clipImage: Boolean = true,
-    showDescription: Boolean = false
+    showDescription: Boolean = false,
+    isImageClickable: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    val serverUiState = viewModel.serverUiStates[serverId]
+    val serverUiState = serverViewModel.serverUiStates[serverId]
     if (serverUiState == null) {
         Log.e(TAG_SERVERS_SCREEN_RENDERING, "服务器列表与服务器 UI 列表不匹配（ UUID: $serverId ）")
         return
     }
 
-    viewModel.updateServerState(serverId)
+    serverViewModel.updateServerState(serverId)
     serverUiState.isGettingStatue.value = true
 
     val cardModifier = Modifier
@@ -129,7 +133,7 @@ fun ServerListItem(
                     expanded = true
                 },
                 onClick = {
-                    viewModel.selectedServerId = serverId
+                    serverViewModel.selectedServerId = serverId
                     navController.navigate(ROUTE_SERVER_DETAILS)
                 }
             ) else cardModifier,
@@ -148,7 +152,10 @@ fun ServerListItem(
                 // 图片
                 ServerImage(
                     serverUiState = serverUiState,
-                    clipImage = clipImage
+                    clipImage = clipImage,
+                    clickable = isImageClickable,
+                    viewModel = imageViewModel,
+                    navController = navController
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -262,14 +269,14 @@ fun ServerListItem(
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.menu_item_delete)) },
                 onClick = {
-                    onDelete(serverId, viewModel) // 执行删除逻辑
+                    onDelete(serverId, serverViewModel) // 执行删除逻辑
                     expanded = false // 关闭菜单
                 }
             )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.menu_item_refresh)) },
                 onClick = {
-                    onRefresh(serverId, viewModel)
+                    onRefresh(serverId, serverViewModel)
                     expanded = false
                 }
             )
@@ -286,7 +293,13 @@ private fun onRefresh(serverId: UUID, viewModel: ServerViewModel) {
 }
 
 @Composable
-fun ServerImage(serverUiState: ServerUiState, clipImage: Boolean) {
+fun ServerImage(
+    serverUiState: ServerUiState,
+    clipImage: Boolean,
+    clickable: Boolean,
+    viewModel: ImageViewModel? = null,
+    navController: NavController? = null
+) {
     // 图片
     val base64String = serverUiState.icon.value
 
@@ -309,7 +322,14 @@ fun ServerImage(serverUiState: ServerUiState, clipImage: Boolean) {
         }
     }
     val imageModifier = Modifier
-        .size(64.dp)
+        .size(64.dp).combinedClickable(
+            onClick = {
+                if (!clickable) return@combinedClickable
+                if (imageBytes == null) return@combinedClickable
+                viewModel?.imageData = imageBytes
+                navController?.navigate(ROUTE_IMAGE)
+            }
+        )
     Image(
         painter = if (imageBytes != null) {
             // 使用 Coil 加载字节数组
@@ -326,7 +346,7 @@ fun ServerImage(serverUiState: ServerUiState, clipImage: Boolean) {
         },
         contentDescription = "Server Icon",
         modifier = if (clipImage) imageModifier
-            .clip(CircleShape) else imageModifier,
+            .clip(CircleShape) else imageModifier
     )
 }
 
