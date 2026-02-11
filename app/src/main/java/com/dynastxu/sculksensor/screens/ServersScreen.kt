@@ -321,15 +321,17 @@ fun ServerImage(
             null // 如果解码失败，返回 null
         }
     }
-    val imageModifier = Modifier
-        .size(64.dp).combinedClickable(
+    var imageModifier = Modifier
+        .size(64.dp)
+    if (clickable) {
+        imageModifier = imageModifier.combinedClickable(
             onClick = {
-                if (!clickable) return@combinedClickable
                 if (imageBytes == null) return@combinedClickable
                 viewModel?.imageData = imageBytes
                 navController?.navigate(ROUTE_IMAGE)
             }
         )
+    }
     Image(
         painter = if (imageBytes != null) {
             // 使用 Coil 加载字节数组
