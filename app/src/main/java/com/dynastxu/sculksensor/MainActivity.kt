@@ -144,6 +144,7 @@ fun MainApp(serverViewModel: ServerViewModel, imageViewModel: ImageViewModel) {
                     ROUTE_PROFILE -> stringResource(R.string.title_person)
                     ROUTE_ADD_SERVER -> stringResource(R.string.title_add_server)
                     ROUTE_SERVER_DETAILS -> stringResource(R.string.title_server_details)
+                    ROUTE_IMAGE -> stringResource(R.string.title_image)
                     else -> stringResource(R.string.app_name)
                 },
                 showBackButton = showBackButton,

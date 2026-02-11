@@ -36,4 +36,5 @@
     <string name="error_server_host_blank">Server host could not been blank</string>
     <string name="error_server_port_out_of_range">Server port must in range 1 ~ 25565</string>
     <string name="error_server_port_not_int">Server port must be integer</string>
+    <string name="title_image">Image Review</string>
 </resources>

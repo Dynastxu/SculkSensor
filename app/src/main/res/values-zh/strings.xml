@@ -36,4 +36,5 @@
     <string name="error_server_host_blank">服务器主机地址不可为空</string>
     <string name="error_server_port_out_of_range">服务器端口必须在范围 1 ~ 65535 之间</string>
     <string name="error_server_port_not_int">服务器端口必须为整数</string>
+    <string name="title_image">图片预览</string>
 </resources>
