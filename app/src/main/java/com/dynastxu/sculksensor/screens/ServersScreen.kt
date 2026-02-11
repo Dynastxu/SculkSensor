@@ -145,6 +145,7 @@ fun ServerListItem(
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // 图片
                 ServerImage(
                     serverUiState = serverUiState,
                     clipImage = clipImage
@@ -289,20 +290,23 @@ fun ServerImage(serverUiState: ServerUiState, clipImage: Boolean) {
     // 图片
     val base64String = serverUiState.icon.value
 
-    // 去除非法字符
-    val cleanedBase64String = base64String
-        .substringAfter("base64,") // 去除 data:image/png;base64, 前缀
-        .replace("\\u003d", "=")   // 解码 Unicode 转义字符
+    var imageBytes: ByteArray? = null
+    if (base64String.isNotBlank()) {
+        // 去除非法字符
+        val cleanedBase64String = base64String
+            .substringAfter("base64,") // 去除 data:image/png;base64, 前缀
+            .replace("\\u003d", "=")   // 解码 Unicode 转义字符
 
-    // 解码 base64 字符串为字节数组
-    val imageBytes = try {
-        Base64.decode(cleanedBase64String, Base64.DEFAULT)
-    } catch (e: IllegalArgumentException) {
-        Log.e(
-            TAG_SERVERS_SCREEN_RENDERING,
-            "服务器 ${serverUiState.host} 图片解析失败： $e"
-        )
-        null // 如果解码失败，返回 null
+        // 解码 base64 字符串为字节数组
+        imageBytes = try {
+            Base64.decode(cleanedBase64String, Base64.DEFAULT)
+        } catch (e: IllegalArgumentException) {
+            Log.e(
+                TAG_SERVERS_SCREEN_RENDERING,
+                "服务器 ${serverUiState.host} 图片解析失败： $e"
+            )
+            null // 如果解码失败，返回 null
+        }
     }
     val imageModifier = Modifier
         .size(64.dp)
@@ -313,6 +317,7 @@ fun ServerImage(serverUiState: ServerUiState, clipImage: Boolean) {
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(imageBytes)
                     .size(Size.ORIGINAL)
+                    .placeholder(R.drawable.ic_default_server)
                     .build()
             )
         } else {
