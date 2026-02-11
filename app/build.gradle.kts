@@ -13,8 +13,8 @@ android {
         applicationId = "com.dynastxu.sculksensor"
         minSdk = 31
         targetSdk = 36
-        versionCode = 2
-        versionName = "v0.1.1-alpha"
+        versionCode = 3
+        versionName = "v0.1.2-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
